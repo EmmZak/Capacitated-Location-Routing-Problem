@@ -2,12 +2,18 @@ from abc import ABC, ABCMeta, abstractmethod
 
 class Base:
     """ Base entity that holds commun attirbutes """
+    ID = 1
 
     def __init__(self, x: float, y: float, capacity: float) -> None:
+        self.__id = Base.ID
+        Base.ID += 1
         self.__x = x
         self.__y = y
         self.__capacity = capacity
     
+    def get_id(self) -> int:
+        return self.__id
+
     def set_x(self, x: float) -> float:
         self.__x = x
 

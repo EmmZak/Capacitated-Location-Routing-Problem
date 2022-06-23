@@ -2,7 +2,13 @@ import numpy as np
 import sklearn
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
+from core.dataset import Dataset
 
+DATABASE_PATH = "./dataset/Instances_Barreto_LRP/coordGaspelle.dat"
+dataset = Dataset(path=DATABASE_PATH)
+print(dataset)
+
+"""
 SAMPLES = 10**2
 CLASSES = 4
 COLORS = [
@@ -78,3 +84,4 @@ for iter in range(1, MAX_ITER):
       plt.annotate(coords, (x, y))
   
   plt.show()
+"""

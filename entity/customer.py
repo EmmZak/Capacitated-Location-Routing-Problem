@@ -1,4 +1,4 @@
-from base import Base
+from entity.base import Base
 
 class Customer(Base):
     
