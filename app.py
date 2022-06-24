@@ -2,11 +2,14 @@ import numpy as np
 import sklearn
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-from core.dataset import Dataset
+from sklearn.svm import SVC
+from core.DataLoader import DataLoader
 from glob import glob
+from sklearn.preprocessing import scale
+from sklearn.model_selection import train_test_split
 
 DATABASE_PATHS = glob('./dataset/*/*')
-
+"""
 for path in DATABASE_PATHS:
     dataset = Dataset(path=path)
 
@@ -33,11 +36,14 @@ for path in DATABASE_PATHS:
     plt.show(block=True)
 
     break
-
-
 """
-SAMPLES = 10**2
-CLASSES = 4
+
+PATH = DATABASE_PATHS[0]
+data = DataLoader(path=PATH)
+
+print(data.nb_depots, data.nb_customers)
+
+exit()
 COLORS = [
     "red", 
     "blue", 
@@ -47,68 +53,44 @@ COLORS = [
     "yellow",
     "purple"
 ]
-MAX_ITER = 300
 
-np.random.seed(0)
-dataset = np.random.rand(SAMPLES, 2)
-np.random.seed(0)
-labels = np.random.randint(0, CLASSES, SAMPLES)
+data = np.array(dataset.customer_coordinates_list, dtype=int)
+X = scale(data)
+depot = np.array(dataset.depot_coordinates_list, dtype=int)
+y = scale(depot)
 
-dataset.shape, labels.shape
 
-inertia_list = list()
 
-MAX_CLUSTERS = 7
+Y = np.zeros((100, 1), dtype=int)
+for i in range(100):
+    dist = []
+    for j in range(5):
+        dist.append(np.linalg.norm(X[i]-y[j]))
+    Y[i] = np.argmin(dist)
 
-for CLUSTERS in range(1, MAX_CLUSTERS):
-    kmeans = KMeans(init="random", n_clusters = CLUSTERS, n_init=10, max_iter = MAX_ITER, random_state=42)
-    kmeans.fit(dataset)
+train_X, test_X, train_Y, test_Y= train_test_split(X, Y, test_size=0.1)
+print("size", train_X.shape, test_X.shape, train_Y.shape, test_Y.shape)
 
-    inertia_list.append(kmeans.inertia_)
+model = SVC()
+model.fit(train_X, train_Y.reshape(-1))
+labels = model.predict(train_X)
 
-plt.style.use("fivethirtyeight")
-plt.plot(range(1, MAX_CLUSTERS), inertia_list)
-plt.xticks(range(1, MAX_CLUSTERS))
-plt.xlabel("Number of Clusters")
-plt.ylabel("SSE")
+#kmeans = KMeans(init="random", n_clusters = dataset.nb_depots, n_init=10, max_iter = 300, random_state=42)
+#kmeans.fit(train_X)
+#labels = kmeans.predict(train_X)
+
+plt.scatter(train_X[:,0], train_X[:,1], c=labels, linewidths=1)
+
+#plt.scatter(kmeans.cluster_centers_[:,0], kmeans.cluster_centers_[:,1], c=np.unique(labels), marker="+", linewidths=20)
+
+depots = np.array(dataset.depot_coordinates_list)
+depots = scale(depots)
+
+print("depots", depots)
+plt.scatter(depots[:,0], depots[:,1], c=np.unique(labels), marker="o", linewidths=20)
+
+#print("cluseters", kmeans.cluster_centers_)
+#print("depots", depots)
+#print("norm" , np.linalg.norm(kmeans.cluster_centers_-depots, 1))
+
 plt.show()
-
-fig = plt.figure()
-
-MAX_ITER = 10
-
-for iter in range(1, MAX_ITER):
-  print("Iter: ", iter)
-  kmeans = KMeans(init="random", n_clusters = CLASSES, n_init=10, max_iter = iter, random_state=42)
-  kmeans.fit(dataset)
-
-  for i, (x,y) in enumerate(dataset):
-      label = labels[i]
-      color = COLORS[label]
-      #print(i, x, y)
-
-      plt.scatter(x, y, c='r')
-  
-  for x, y in kmeans.cluster_centers_:
-      plt.scatter(x, y, c="black", marker="X", linewidths=3)
-
-      coords = f'({x:.2f}, {y:.2f})'
-      plt.annotate(coords, (x, y))
-
-  plt.show()
-  # AFTER FIT
-  for i, data in enumerate(dataset):
-      x, y = data
-
-      pred = kmeans.predict([data])
-      color = COLORS[pred[0]]
-      plt.scatter(x, y, c=color)
-  
-  for x, y in kmeans.cluster_centers_:
-      plt.scatter(x, y, c="black", marker="X", linewidths=3)
-
-      coords = f'({x:.2f}, {y:.2f})'
-      plt.annotate(coords, (x, y))
-  
-  plt.show()
-"""
