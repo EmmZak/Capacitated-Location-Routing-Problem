@@ -1,8 +1,5 @@
-from re import A
-from entity.customer import Customer
-from entity.depot import Depot
 
-class Dataset:
+class DataLoader:
 
     NB_CUSTOMERS_LINE = 0
     NB_DEPOTS_LINE = 1
@@ -14,9 +11,6 @@ class Dataset:
 
         self.customer_coordinates_list = list()
         self.depot_coordinates_list = list()
-
-        self.customer_list = list()
-        self.depot_list = list()
 
         self.vehicle_capacity = 0
 
@@ -41,7 +35,7 @@ class Dataset:
         START = self.OFFSET
         END = self.OFFSET + self.nb_depots
 
-        self.depot_capacity_list = lines[START: END]
+        self.depot_capacity_list = list(map(int, lines[START: END]))
 
         self.next_offset(self.nb_depots)
 
@@ -51,11 +45,9 @@ class Dataset:
         
         for line in lines[START: END]:
             line = line.split(' ')
-            #print(line)
             line = list(filter(lambda l: l != '', line))
-            #print(line)
-            x, y = line[0], line[1]
-            #print("x y", x, y)
+            x = int(line[0])
+            y = int(line[1])
             self.depot_coordinates_list.append((x, y))
 
         self.next_offset(self.nb_depots)
@@ -66,11 +58,9 @@ class Dataset:
         
         for line in lines[START: END]:
             line = line.split(' ')
-            #print(line)
             line = list(filter(lambda l: l != '', line))
-            #print(line)
-            x, y = line[0], line[1]
-            #print("customer x y", x, y)
+            x = int(line[0])
+            y = int(line[1])
             self.customer_coordinates_list.append((x, y))
 
         self.next_offset(self.nb_customers)
@@ -78,14 +68,14 @@ class Dataset:
     def _load_customer_demands(self, lines: list):
         START = self.OFFSET
         END = self.OFFSET + self.nb_customers
-        self.customer_demand_list = lines[START: END]
+        self.customer_demand_list = list(map(int, lines[START: END]))
         
         self.next_offset(self.nb_customers)
 
     def _load_depot_opening_costs(self, lines: list):
         START = self.OFFSET
         END = self.OFFSET + self.nb_depots
-        self.depot_opening_costs = lines[START: END]
+        self.depot_opening_costs = list(map(int, lines[START: END]))
 
         self.next_offset(self.nb_depots)
 
@@ -128,19 +118,13 @@ class Dataset:
 
             self.is_int = bool(lines[self.OFFSET] == '1')
 
-            #print("depor coords", self.depot_coordinates_list)
-            for (x, y), capacity, cost in zip(self.depot_coordinates_list, self.depot_capacity_list, self.depot_opening_costs):
-                d = Depot(float(x), float(y), capacity, cost)
-                self.depot_list.append(d)
-            
-            for (x, y), demand in zip(self.customer_coordinates_list, self.customer_demand_list):
-                c = Customer(float(x), float(y), demand)
-                self.customer_list.append(c)
             
     def __repr__(self):
-        return f'Dataset: {self.__dict__}'
+        repr = f''
+        for key, value in self.__dict__.items():
+            repr += f'{key}: {value} \n'
+            #print(key, value)
 
-if __name__ == "__main__":
+        return repr
 
-    d = Dataset(path="")
 
