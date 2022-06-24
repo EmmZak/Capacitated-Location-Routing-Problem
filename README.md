@@ -11,7 +11,7 @@ http://prodhonc.free.fr/
 
 ## DataLoader usage
 
-[coord20-5-1.dat](https://github.com/user/repo/blob/branch/other_file.md)
+[coord20-5-1.dat](https://github.com/EmmZak/Capacitated-Location-Routing-Problem/blob/main/dataset/Instances_Prodhon_LRP/coord20-5-1.dat)
 
 ```python
 from DataLoader import DataLoader
