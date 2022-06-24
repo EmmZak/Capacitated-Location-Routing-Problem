@@ -3,10 +3,37 @@ import sklearn
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from core.dataset import Dataset
+from glob import glob
 
-DATABASE_PATH = "./dataset/Instances_Barreto_LRP/coordGaspelle.dat"
-dataset = Dataset(path=DATABASE_PATH)
-print(dataset)
+DATABASE_PATHS = glob('./dataset/*/*')
+
+for path in DATABASE_PATHS:
+    dataset = Dataset(path=path)
+
+    for d in dataset.depot_list:
+        x, y = d.get_x(), d.get_y()
+        plt.scatter(x, y, c="black", linewidths=4)
+
+        coords = f'({x:.2f}, {y:.2f})'
+        plt.annotate(coords, (x, y), size=5)
+
+    for d in dataset.customer_list:
+        x, y = d.get_x(), d.get_y()
+        plt.scatter(x, y, c="red", linewidths=1)
+
+        coords = f'({x:.2f}, {y:.2f})'
+        plt.annotate(coords, (x, y), size=3)
+
+    plt.style.use("fivethirtyeight")
+    #plt.plot(range(1, MAX_CLUSTERS), inertia_list)
+    #plt.xticks(range(1, MAX_CLUSTERS))
+    plt.xlabel("X axis")
+    plt.ylabel("Y axis")
+    plt.title(path)
+    plt.show(block=True)
+
+    break
+
 
 """
 SAMPLES = 10**2

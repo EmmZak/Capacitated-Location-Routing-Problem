@@ -49,7 +49,14 @@ class Dataset:
         START = self.OFFSET
         END = self.OFFSET + self.nb_depots
         
-        self.depot_coordinates_list = [ line.split(' ') for line in lines[START: END] ]
+        for line in lines[START: END]:
+            line = line.split(' ')
+            #print(line)
+            line = list(filter(lambda l: l != '', line))
+            #print(line)
+            x, y = line[0], line[1]
+            #print("x y", x, y)
+            self.depot_coordinates_list.append((x, y))
 
         self.next_offset(self.nb_depots)
 
@@ -57,7 +64,14 @@ class Dataset:
         START = self.OFFSET
         END = self.OFFSET + self.nb_customers
         
-        self.customer_coordinates_list = [ line.split(' ') for line in lines[START: END] ]
+        for line in lines[START: END]:
+            line = line.split(' ')
+            #print(line)
+            line = list(filter(lambda l: l != '', line))
+            #print(line)
+            x, y = line[0], line[1]
+            #print("customer x y", x, y)
+            self.customer_coordinates_list.append((x, y))
 
         self.next_offset(self.nb_customers)
 
@@ -75,6 +89,15 @@ class Dataset:
 
         self.next_offset(self.nb_depots)
 
+    def _transform_dataset(self, lines):
+        lines = list(map(lambda line: line.replace('\t', ' '), lines))
+        lines = list(map(lambda line: line.replace('\n', ''), lines))
+        lines = list(map(lambda line: line.rstrip(), lines))
+        lines = list(map(lambda line: line.lstrip(), lines))
+        lines = list(filter(lambda line: line != '', lines))
+
+        return lines
+
     def _load_dataset(self):
         with open(self.path, "r") as f:
             lines = f.readlines()
@@ -87,63 +110,33 @@ class Dataset:
             self.nb_depots = int(lines[self.OFFSET])
             self.next_offset()
 
-            # jump
-            self.next_offset()
-
             self._load_depot_coordinates(lines)
-
-            # jump
-            self.next_offset()
-
+            
             self._load_customer_coordinates(lines)
 
-            # jump
-            self.next_offset()
-
-            self.vehicle_capacity = int(lines[self.OFFSET])
-            self.next_offset()
-
-            # jump
+            self.vehicle_capacity = float(lines[self.OFFSET])
             self.next_offset()
 
             self._load_depot_capacities(lines)
-            
-            # jump
-            self.next_offset()
 
             self._load_customer_demands(lines)
 
-            # jump
-            self.next_offset()
-
             self._load_depot_opening_costs(lines)
 
-            # jump
+            self.route_opening_cost = float(lines[self.OFFSET])
             self.next_offset()
 
-            self.route_opening_cost = int(lines[self.OFFSET])
-            self.next_offset()
-
-            # jump
-            self.next_offset()
             self.is_int = bool(lines[self.OFFSET] == '1')
 
+            #print("depor coords", self.depot_coordinates_list)
             for (x, y), capacity, cost in zip(self.depot_coordinates_list, self.depot_capacity_list, self.depot_opening_costs):
-                d = Depot(x, y, capacity, cost)
+                d = Depot(float(x), float(y), capacity, cost)
                 self.depot_list.append(d)
             
             for (x, y), demand in zip(self.customer_coordinates_list, self.customer_demand_list):
-                c = Customer(x, y, demand)
+                c = Customer(float(x), float(y), demand)
                 self.customer_list.append(c)
             
-    
-    def _transform_dataset(self, lines):
-        lines = list(map(lambda line: line.replace('\n', ''), lines))
-        lines = list(map(lambda line: line.rstrip(), lines))
-        lines = list(map(lambda line: line.lstrip(), lines))
-
-        return lines
-
     def __repr__(self):
         return f'Dataset: {self.__dict__}'
 
