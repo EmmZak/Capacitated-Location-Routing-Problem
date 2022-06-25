@@ -11,6 +11,7 @@ http://prodhonc.free.fr/
 
 ## DataLoader usage
 
+Works with all 3 benchmarks instances. Example with
 [coord20-5-1.dat](https://github.com/EmmZak/Capacitated-Location-Routing-Problem/blob/main/dataset/Instances_Prodhon_LRP/coord20-5-1.dat)
 
 ```python
