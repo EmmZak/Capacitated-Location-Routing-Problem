@@ -36,7 +36,7 @@ class DataLoader:
         START = self.__OFFSET
         END = self.__OFFSET + self.nb_depots
 
-        self.depot_capacity_list = lines[START: END]
+        self.depot_capacity_list = list(map(int, lines[START: END]))
 
         self._next_offset(self.nb_depots)
 
@@ -46,11 +46,9 @@ class DataLoader:
         
         for line in lines[START: END]:
             line = line.split(' ')
-            #print(line)
             line = list(filter(lambda l: l != '', line))
-            #print(line)
-            x, y = line[0], line[1]
-            #print("x y", x, y)
+            x = int(line[0])
+            y = int(line[1])
             self.depot_coordinates_list.append((x, y))
 
         self._next_offset(self.nb_depots)
@@ -61,11 +59,9 @@ class DataLoader:
         
         for line in lines[START: END]:
             line = line.split(' ')
-            #print(line)
             line = list(filter(lambda l: l != '', line))
-            #print(line)
-            x, y = line[0], line[1]
-            #print("customer x y", x, y)
+            x = int(line[0])
+            y = int(line[1])
             self.customer_coordinates_list.append((x, y))
 
         self._next_offset(self.nb_customers)
@@ -73,14 +69,14 @@ class DataLoader:
     def _load_customer_demands(self, lines: list):
         START = self.__OFFSET
         END = self.__OFFSET + self.nb_customers
-        self.customer_demand_list = lines[START: END]
+        self.customer_demand_list = list(map(int, lines[START: END]))
         
         self._next_offset(self.nb_customers)
 
     def _load_depot_opening_costs(self, lines: list):
         START = self.__OFFSET
         END = self.__OFFSET + self.nb_depots
-        self.depot_opening_costs = lines[START: END]
+        self.depot_opening_costs = list(map(int, lines[START: END]))
 
         self._next_offset(self.nb_depots)
 
